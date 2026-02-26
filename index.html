@@ -325,69 +325,6 @@
             cursor: pointer;
         }
 
-        .folder-card {
-            background: #1c1c1c;
-            border-radius: 20px;
-            padding: 12px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            border: 1px solid rgba(255,255,255,0.05);
-            position: relative;
-            cursor: pointer;
-            width: 100%;
-            min-height: 220px;
-        }
-        .folder-stack {
-            position: relative;
-            width: 70px;
-            height: 100px;
-            margin-bottom: 10px;
-        }
-        .folder-stack img {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 6px;
-            border: 1px solid rgba(255,255,255,0.1);
-            background: #111;
-        }
-        .stack-1 { transform: rotate(-5deg) translate(-5px, 2px); z-index: 1; opacity: 0.5; }
-        .stack-2 { transform: rotate(5deg) translate(5px, 1px); z-index: 2; opacity: 0.7; }
-        .stack-main { transform: rotate(0deg); z-index: 3; }
-
-        .folder-badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: #3e6a8a;
-            color: white;
-            font-size: 10px;
-            font-weight: bold;
-            padding: 2px 8px;
-            border-radius: 10px;
-            z-index: 10;
-        }
-
-        .folder-dates {
-            font-size: 8px;
-            color: #555;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-top: 4px;
-            line-height: 1.2;
-        }
-        
-        .folder-rating-stars {
-            color: #ffd700;
-            font-size: 11px;
-            margin-top: 6px;
-            font-weight: bold;
-        }
-
         .star-rating {
             display: flex;
             justify-content: center;
@@ -870,7 +807,6 @@
             const percentage = Math.min((todayMinutes / dailyGoal) * 100, 100);
             document.getElementById('goalFill').style.width = percentage + '%';
 
-            // Actualizar Meta Anual
             updateAnnualGoalUI();
         }
 
@@ -889,7 +825,6 @@
             document.getElementById('annualGoalFill').style.width = percentage + '%';
         }
 
-        // --- RESUMEN ANUAL LOGIC ---
         function openAnnualReport() {
             const year = new Date().getFullYear();
             const yearStr = year.toString();
@@ -900,7 +835,6 @@
                 return b.endDate.split('/')[2] === yearStr;
             });
 
-            // Stats
             document.getElementById('reportTotalBooks').innerText = booksThisYear.length;
             const totalPages = booksThisYear.reduce((acc, b) => acc + (b.pageTotal || 0), 0);
             document.getElementById('reportTotalPages').innerText = totalPages;
@@ -916,7 +850,6 @@
             for (let a in authors) if(authors[a] > maxA) { maxA = authors[a]; topAuthor = a; }
             document.getElementById('reportTopAuthor').innerText = topAuthor;
 
-            // Chart
             const monthlyCounts = new Array(12).fill(0);
             booksThisYear.forEach(b => {
                 const monthIdx = parseInt(b.endDate.split('/')[1]) - 1;
@@ -928,7 +861,6 @@
                 return `<div class="chart-bar" style="height: ${h}%"></div>`;
             }).join('');
 
-            // Top 3
             const top3 = [...booksThisYear].sort((a,b) => (b.rating || 0) - (a.rating || 0)).slice(0, 3);
             document.getElementById('reportTopBooks').innerHTML = top3.map((b, i) => `
                 <div class="flex items-center gap-4 bg-zinc-900/30 p-4 rounded-2xl border border-white/5" onclick="viewDetail(${b.id})">
@@ -967,7 +899,6 @@
             }
         }
 
-        // Funciones Meta Anual
         function openAnnualGoalModal() {
             document.getElementById('annualGoalInput').value = annualGoal;
             document.getElementById('annualGoalModal').classList.remove('hidden');
@@ -998,13 +929,6 @@
         function getCurrentDate() {
             const today = new Date();
             return `${today.getDate().toString().padStart(2,'0')}/${(today.getMonth() + 1).toString().padStart(2,'0')}/${today.getFullYear()}`;
-        }
-
-        function parseDate(str) {
-            if(!str) return null;
-            const parts = str.split('/');
-            if(parts.length < 3) return null;
-            return new Date(parts[2], parts[1]-1, parts[0]);
         }
 
         function calculateReadingMetrics(bookId) {
@@ -1361,10 +1285,8 @@
                     const p = parseInt(document.getElementById('timerNewPageInput').value);
                     const pagesRead = Math.max(0, p - a.pageNow);
                     const isF = p >= a.pageTotal && a.pageTotal > 0;
-                    
                     const sessionMinutes = timerSeconds / 60;
                     const ppm = sessionMinutes > 0 ? (pagesRead / sessionMinutes).toFixed(2) : 0;
-                    
                     document.getElementById('sessionStatsLabel').innerText = `Has leído ${pagesRead} páginas (${ppm} PPM)`;
                     document.getElementById('standardProgressInputs').classList.toggle('hidden', isF);
                     document.getElementById('ratingInputContainer').classList.toggle('hidden', !isF);
@@ -1380,19 +1302,8 @@
             if(a && !isNaN(p)){
                 const pagesRead = Math.max(0, p - a.pageNow);
                 a.pageNow = p;
-                
-                readingLogs.push({ 
-                    date: getCurrentDate(), 
-                    bookId: a.id, 
-                    duration: timerSeconds,
-                    pagesRead: pagesRead
-                });
-
-                if(p >= a.pageTotal && a.pageTotal > 0){ 
-                    a.status = 'finished'; 
-                    a.endDate = getCurrentDate(); 
-                    a.rating = currentRating; 
-                }
+                readingLogs.push({ date: getCurrentDate(), bookId: a.id, duration: timerSeconds, pagesRead: pagesRead });
+                if(p >= a.pageTotal && a.pageTotal > 0){ a.status = 'finished'; a.endDate = getCurrentDate(); a.rating = currentRating; }
                 save();
             }
             closeTimer(); hideTimerProgress(); renderAll();
@@ -1420,20 +1331,39 @@
         function openCalendar() { updateCalendar(); document.getElementById('calendarPage').classList.add('active-view'); }
         function closeCalendar() { document.getElementById('calendarPage').classList.remove('active-view'); }
         function changeMonth(dir) { calMonth += dir; if(calMonth<0){calMonth=11; calYear--;} else if(calMonth>11){calMonth=0; calYear++;} updateCalendar(); }
+        
+        // --- FUNCIÓN ARREGLADA PARA LIBROS ANTIGUOS ---
         function updateCalendar() {
-            const first = new Date(calYear, calMonth, 1).getDay();
-            const days = new Date(calYear, calMonth + 1, 0).getDate();
-            const adj = first === 0 ? 6 : first - 1;
+            const grid = document.getElementById('calendarDaysGrid');
+            grid.innerHTML = '';
+            
             document.getElementById('calendarMonthLabel').innerText = new Date(calYear, calMonth).toLocaleString('es-ES', {month: 'long'});
             document.getElementById('calendarYearLabel').innerText = calYear;
+
+            const first = new Date(calYear, calMonth, 1).getDay();
+            const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+            const adj = first === 0 ? 6 : first - 1;
+            
             let html = '';
             for(let i=0; i<adj; i++) html += '<div class="calendar-day"></div>';
-            for(let d=1; d<=days; d++) {
-                const dk = `${d.toString().padStart(2,'0')}/${(calMonth+1).toString().padStart(2,'0')}/${calYear}`;
-                const b = myLibrary.find(x => x.endDate === dk);
-                html += `<div class="calendar-day"><span class="day-number ${dk === getCurrentDate() ? 'today' : ''}">${d}</span>${b ? `<img src="${b.cover}" class="calendar-book-thumb" onclick="viewDetail(${b.id})">` : ''}</div>`;
+            
+            for(let d=1; d<=daysInMonth; d++) {
+                const dayNumStr = d.toString().padStart(2, '0');
+                const monthNumStr = (calMonth + 1).toString().padStart(2, '0');
+                const fullDateKey = `${dayNumStr}/${monthNumStr}/${calYear}`;
+                
+                // Buscamos libros que terminen exactamente en esta fecha
+                const book = myLibrary.find(x => x.endDate === fullDateKey);
+                
+                const isToday = fullDateKey === getCurrentDate();
+                
+                html += `
+                    <div class="calendar-day">
+                        <span class="day-number ${isToday ? 'today' : ''}">${d}</span>
+                        ${book ? `<img src="${book.cover}" class="calendar-book-thumb" onclick="viewDetail(${book.id})">` : ''}
+                    </div>`;
             }
-            document.getElementById('calendarDaysGrid').innerHTML = html;
+            grid.innerHTML = html;
         }
 
         function openCollection(type, back = false) {
