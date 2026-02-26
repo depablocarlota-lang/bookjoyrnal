@@ -7,95 +7,93 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="pb-24 px-4">
+<body class="pb-24 px-4 bg-[#0a0e14]">
 
     <div id="mainPage" class="max-w-md mx-auto pt-8">
-        <header class="flex justify-between items-center mb-8">
+        <header class="flex justify-between items-center mb-6">
             <div>
-                <h1 class="text-2xl font-bold">BookJournal</h1>
-                <p class="text-[9px] text-stone-500 uppercase tracking-widest font-bold">Biblioteca de Carlota</p>
+                <h1 class="text-3xl font-bold italic serif tracking-tight">BookJournal</h1>
+                <p class="text-[10px] text-sky-500 uppercase tracking-[0.2em] font-black">Carlota's Library</p>
             </div>
-            <div class="flex gap-2">
-                <button onclick="openAnnualReport()" class="h-10 w-10 bg-zinc-800 rounded-xl flex items-center justify-center text-lg">📊</button>
-                <button onclick="openModal()" class="h-10 w-10 bg-zinc-800 rounded-xl flex items-center justify-center text-lg">＋</button>
-            </div>
+            <button onclick="openModal('bookModal')" class="h-12 w-12 bg-sky-600 rounded-2xl flex items-center justify-center text-2xl shadow-lg">＋</button>
         </header>
 
-        <div class="mb-6">
-            <input type="text" id="searchInput" oninput="searchInMyLibrary()" placeholder="Buscar en mi estantería..." class="w-full bg-[#1e1e1e] rounded-2xl p-4 text-sm border border-stone-800 focus:outline-none text-white">
-            <div id="quickSearchResults" class="mt-4 space-y-4"></div>
-        </div>
-
-        <div class="space-y-3 mb-6">
-            <div class="streak-card" onclick="openGoalModal()">
-                <div class="flex items-center gap-4">
-                    <div class="text-2xl">🔥</div>
-                    <div>
-                        <span class="text-[8px] uppercase font-bold text-stone-500 tracking-widest block">Racha actual</span>
-                        <p class="text-lg font-bold"><span id="streakDays">0</span> días</p>
-                    </div>
-                </div>
-                <div class="text-right">
-                    <span class="text-[8px] uppercase font-bold text-stone-500 tracking-widest">Meta: <span id="goalLabel">60</span>m</span>
-                    <div class="streak-mini-bar"><div id="goalFill" class="streak-mini-fill"></div></div>
-                </div>
-            </div>
-
-            <div class="streak-card" onclick="openAnnualGoalModal()">
-                <div class="flex items-center gap-4">
-                    <div class="text-2xl">📚</div>
-                    <div>
-                        <span class="text-[8px] uppercase font-bold text-stone-500 tracking-widest block">Leídos este año</span>
-                        <p class="text-lg font-bold"><span id="annualCount">0</span> libros</p>
-                    </div>
-                </div>
-                <div class="text-right">
-                    <span class="text-[8px] uppercase font-bold text-stone-500 tracking-widest">Meta: <span id="annualGoalLabel">12</span></span>
-                    <div class="streak-mini-bar"><div id="annualGoalFill" class="annual-mini-fill"></div></div>
-                </div>
+        <div class="mb-8">
+            <div class="relative group">
+                <input type="text" id="searchInput" placeholder="Buscar por título o autor..." 
+                    class="w-full bg-zinc-900/50 border border-white/5 p-4 pl-12 rounded-2xl text-sm focus:border-sky-500/50 transition-all outline-none">
+                <span class="absolute left-4 top-4 opacity-30">🔍</span>
             </div>
         </div>
 
-        <div id="activeSection" class="mb-10"></div>
-
-        <div class="grid grid-cols-2 gap-3 mb-3">
-            <div onclick="openListView('wishlist')" class="status-card rounded-2xl flex items-center px-4 cursor-pointer">
-                <span class="text-[14px] mr-2">⌛</span>
-                <span class="text-[9px] uppercase tracking-widest font-bold text-stone-400">Pendientes</span>
-                <span class="ml-auto text-xs font-bold text-white/30" id="countWishlist">0</span>
+        <div class="streak-card p-6 rounded-[32px] mb-8 flex justify-between items-center relative z-10">
+            <div class="flex items-center gap-4">
+                <div class="text-4xl animate-bounce">🔥</div>
+                <div>
+                    <span class="text-[10px] uppercase font-bold text-zinc-500 block">Racha actual</span>
+                    <p class="text-2xl font-black">7 <span class="text-xs font-normal text-zinc-400">días</span></p>
+                </div>
             </div>
-            <div onclick="openListView('finished')" class="status-card rounded-2xl flex items-center px-4 cursor-pointer">
-                <span class="text-[14px] mr-2">✔</span>
-                <span class="text-[9px] uppercase tracking-widest font-bold text-stone-400">Leídos</span>
-                <span class="ml-auto text-xs font-bold text-white/30" id="countFinished">0</span>
+            <div class="text-right">
+                <span class="text-[10px] uppercase font-bold text-zinc-500 block">Hoy</span>
+                <p class="text-xs font-bold text-emerald-500">¡Completado!</p>
             </div>
         </div>
 
-        <div onclick="openCalendar()" class="status-card rounded-2xl flex items-center px-4 cursor-pointer mb-3 w-full">
-            <span class="text-[14px] mr-2">📅</span>
-            <span class="text-[9px] uppercase tracking-widest font-bold text-stone-400">Calendario</span>
-            <span class="ml-auto text-[10px] text-white/20 font-mono" id="currentDateLabel"></span>
+        <div class="mb-10 overflow-x-auto no-scrollbar flex gap-3 pb-2">
+            <button onclick="setFilter('all')" class="bg-white text-black px-6 py-3 rounded-2xl font-bold text-xs whitespace-nowrap">Todo</button>
+            <button onclick="setFilter('Sagas')" class="bg-zinc-900 px-6 py-3 rounded-2xl font-bold text-xs text-zinc-400 border border-white/5 whitespace-nowrap">Sagas</button>
+            <button onclick="setFilter('Trilogías')" class="bg-zinc-900 px-6 py-3 rounded-2xl font-bold text-xs text-zinc-400 border border-white/5 whitespace-nowrap">Trilogías</button>
+            <button onclick="setFilter('Bilogías')" class="bg-zinc-900 px-6 py-3 rounded-2xl font-bold text-xs text-zinc-400 border border-white/5 whitespace-nowrap">Bilogías</button>
+            <button onclick="setFilter('Autoconclusivos')" class="bg-zinc-900 px-6 py-3 rounded-2xl font-bold text-xs text-zinc-400 border border-white/5 whitespace-nowrap">Autoconclusivos</button>
+        </div>
+
+        <div id="booksGrid" class="grid grid-cols-2 gap-4">
+            </div>
+    </div>
+
+    <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-md glass-panel h-20 rounded-[28px] flex justify-around items-center px-8 shadow-2xl z-[100]">
+        <button onclick="location.reload()" class="text-2xl">🏠</button>
+        <button onclick="openModal('calendarModal')" class="text-2xl text-zinc-600">📅</button>
+        <div class="text-center">
+            <span class="text-[10px] block font-black text-sky-500" id="countFinished">0</span>
+            <span class="text-[8px] uppercase text-zinc-500 font-bold">Leídos</span>
+        </div>
+        <div class="text-center">
+            <span class="text-[10px] block font-black text-white" id="countWishlist">0</span>
+            <span class="text-[8px] uppercase text-zinc-500 font-bold">Lista</span>
+        </div>
+    </nav>
+
+    <div id="bookModal" class="fixed inset-0 bg-black/95 z-[200] hidden flex items-center justify-center p-6 backdrop-blur-md">
+        <div class="bg-[#141923] w-full max-w-sm rounded-[40px] p-8 border border-white/10 shadow-2xl">
+            <h3 class="text-2xl font-bold mb-6 text-center italic serif">Añadir a la colección</h3>
+            <div class="space-y-4">
+                <input id="titleInput" type="text" placeholder="Título del libro" class="w-full p-4 rounded-2xl outline-none">
+                <input id="authorInput" type="text" placeholder="Autor" class="w-full p-4 rounded-2xl outline-none">
+                <input id="coverInput" type="text" placeholder="URL de la portada" class="w-full p-4 rounded-2xl outline-none">
+                <select id="categoryInput" class="w-full p-4 rounded-2xl outline-none appearance-none">
+                    <option value="Sagas">Saga</option>
+                    <option value="Trilogías">Trilogía</option>
+                    <option value="Bilogías">Bilogía</option>
+                    <option value="Autoconclusivos">Autoconclusivo</option>
+                </select>
+                <button onclick="saveBook()" class="w-full bg-sky-600 font-bold py-5 rounded-2xl mt-4 shadow-lg shadow-sky-600/20">GUARDAR LIBRO</button>
+                <button onclick="closeModal('bookModal')" class="w-full text-zinc-500 text-xs font-bold pt-2 uppercase tracking-widest">Cerrar</button>
+            </div>
         </div>
     </div>
 
-    <div id="calendarPage" class="full-page-view p-6">
-        <header class="flex justify-between items-center mb-6 pt-4">
-            <button onclick="closeCalendar()" class="h-10 w-10 bg-zinc-800 rounded-xl text-white">←</button>
-            <h2 id="calendarMonthLabel" class="text-base font-bold uppercase tracking-widest"></h2>
-        </header>
-        <div id="calendarDaysGrid" class="calendar-grid bg-[#141414] rounded-2xl overflow-hidden"></div>
-    </div>
-
-    <div id="bookModal" class="fixed inset-0 bg-black/95 z-[200] hidden flex justify-center items-end">
-        <div class="bg-[#181818] w-full max-w-md rounded-t-[40px] p-8">
-            <h3 class="text-xl font-bold mb-6">Nuevo Libro</h3>
-            <input id="formTitle" placeholder="Título" class="w-full p-4 bg-zinc-900 rounded-2xl mb-4 text-white">
-            <input id="formAuthor" placeholder="Autor" class="w-full p-4 bg-zinc-900 rounded-2xl mb-4 text-white">
-            <button onclick="saveBook()" class="w-full bg-sky-600 py-4 rounded-2xl font-bold">Guardar Libro</button>
-            <button onclick="closeModal()" class="w-full mt-4 text-stone-500">Cancelar</button>
+    <div id="calendarModal" class="fixed inset-0 bg-black/95 z-[200] hidden flex flex-col p-8">
+        <div class="flex justify-between items-center mb-10">
+            <h2 class="text-3xl font-bold italic serif">Lectura</h2>
+            <button onclick="closeModal('calendarModal')" class="h-10 w-10 bg-zinc-900 rounded-full flex items-center justify-center">✕</button>
+        </div>
+        <div class="bg-zinc-900/50 p-6 rounded-[32px] border border-white/5">
+            <div id="calMonthLabel" class="text-center mb-6 font-bold uppercase tracking-widest text-sky-500"></div>
+            <div id="calendarGrid" class="calendar-grid"></div>
         </div>
     </div>
 
-    <script src="script.js"></script>
-</body>
-</html>
+    <div id="timerModal" class="fixed inset-0 bg-black/95 z-[200] hidden flex flex-col items-center justify-center p-8">
+        <div id="timerMain" class="text-7xl font-black mb-8 timer-display-big">0
