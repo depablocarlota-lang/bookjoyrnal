@@ -17,15 +17,84 @@
             </div>
             <div class="flex gap-2">
                 <button onclick="openAnnualReport()" class="h-10 w-10 bg-zinc-800 rounded-xl flex items-center justify-center text-lg">📊</button>
-                <button onclick="toggleAddMenu()" class="h-10 w-10 bg-zinc-800 rounded-xl flex items-center justify-center text-lg">＋</button>
+                <button onclick="openModal()" class="h-10 w-10 bg-zinc-800 rounded-xl flex items-center justify-center text-lg">＋</button>
             </div>
         </header>
 
-        <div id="app-content">
+        <div class="mb-6">
+            <input type="text" id="searchInput" oninput="searchInMyLibrary()" placeholder="Buscar en mi estantería..." class="w-full bg-[#1e1e1e] rounded-2xl p-4 text-sm border border-stone-800 focus:outline-none text-white">
+            <div id="quickSearchResults" class="mt-4 space-y-4"></div>
+        </div>
+
+        <div class="space-y-3 mb-6">
+            <div class="streak-card" onclick="openGoalModal()">
+                <div class="flex items-center gap-4">
+                    <div class="text-2xl">🔥</div>
+                    <div>
+                        <span class="text-[8px] uppercase font-bold text-stone-500 tracking-widest block">Racha actual</span>
+                        <p class="text-lg font-bold"><span id="streakDays">0</span> días</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <span class="text-[8px] uppercase font-bold text-stone-500 tracking-widest">Meta: <span id="goalLabel">60</span>m</span>
+                    <div class="streak-mini-bar"><div id="goalFill" class="streak-mini-fill"></div></div>
+                </div>
             </div>
+
+            <div class="streak-card" onclick="openAnnualGoalModal()">
+                <div class="flex items-center gap-4">
+                    <div class="text-2xl">📚</div>
+                    <div>
+                        <span class="text-[8px] uppercase font-bold text-stone-500 tracking-widest block">Leídos este año</span>
+                        <p class="text-lg font-bold"><span id="annualCount">0</span> libros</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <span class="text-[8px] uppercase font-bold text-stone-500 tracking-widest">Meta: <span id="annualGoalLabel">12</span></span>
+                    <div class="streak-mini-bar"><div id="annualGoalFill" class="annual-mini-fill"></div></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="activeSection" class="mb-10"></div>
+
+        <div class="grid grid-cols-2 gap-3 mb-3">
+            <div onclick="openListView('wishlist')" class="status-card rounded-2xl flex items-center px-4 cursor-pointer">
+                <span class="text-[14px] mr-2">⌛</span>
+                <span class="text-[9px] uppercase tracking-widest font-bold text-stone-400">Pendientes</span>
+                <span class="ml-auto text-xs font-bold text-white/30" id="countWishlist">0</span>
+            </div>
+            <div onclick="openListView('finished')" class="status-card rounded-2xl flex items-center px-4 cursor-pointer">
+                <span class="text-[14px] mr-2">✔</span>
+                <span class="text-[9px] uppercase tracking-widest font-bold text-stone-400">Leídos</span>
+                <span class="ml-auto text-xs font-bold text-white/30" id="countFinished">0</span>
+            </div>
+        </div>
+
+        <div onclick="openCalendar()" class="status-card rounded-2xl flex items-center px-4 cursor-pointer mb-3 w-full">
+            <span class="text-[14px] mr-2">📅</span>
+            <span class="text-[9px] uppercase tracking-widest font-bold text-stone-400">Calendario</span>
+            <span class="ml-auto text-[10px] text-white/20 font-mono" id="currentDateLabel"></span>
+        </div>
     </div>
 
-    <div id="dynamic-views"></div>
+    <div id="calendarPage" class="full-page-view p-6">
+        <header class="flex justify-between items-center mb-6 pt-4">
+            <button onclick="closeCalendar()" class="h-10 w-10 bg-zinc-800 rounded-xl text-white">←</button>
+            <h2 id="calendarMonthLabel" class="text-base font-bold uppercase tracking-widest"></h2>
+        </header>
+        <div id="calendarDaysGrid" class="calendar-grid bg-[#141414] rounded-2xl overflow-hidden"></div>
+    </div>
+
+    <div id="bookModal" class="fixed inset-0 bg-black/95 z-[200] hidden flex justify-center items-end">
+        <div class="bg-[#181818] w-full max-w-md rounded-t-[40px] p-8">
+            <h3 class="text-xl font-bold mb-6">Nuevo Libro</h3>
+            <input id="formTitle" placeholder="Título" class="w-full p-4 bg-zinc-900 rounded-2xl mb-4 text-white">
+            <input id="formAuthor" placeholder="Autor" class="w-full p-4 bg-zinc-900 rounded-2xl mb-4 text-white">
+            <button onclick="saveBook()" class="w-full bg-sky-600 py-4 rounded-2xl font-bold">Guardar Libro</button>
+            <button onclick="closeModal()" class="w-full mt-4 text-stone-500">Cancelar</button>
+        </div>
+    </div>
 
     <script src="script.js"></script>
 </body>
